@@ -65,8 +65,36 @@
 
 ---
 
-## 🛠️ INSTRUKSI PENGEMBANGAN DENGAN AI LAIN (PROMPT GUIDANCE)
+## 🛠️ KUMPULAN PROMPT TAMBAHAN UNTUK AI DESAIN (PROMPT PACK)
 
-Gunakan prompt berikut jika Anda ingin meminta AI lain merombak tampilan HTML/CSS:
+Anda bisa menyalin (*copy-paste*) prompt di bawah ini sesuai dengan jenis AI yang Anda gunakan:
 
-> "Tolong rombak tampilan web video downloader ini menjadi ultra-modern, clean, dan sangat nyaman di layar HP (Mobile-First). Gunakan HTML5 & CSS3 murni dengan skema warna Clean Emerald (#059669) & White (#ffffff). JANGAN PAKAI WARNA NEON ATAU STABILO NORAK. Pastikan komponen form input, tombol download, dan kartu hasil galeri sangat responsif dan mudah ditap di HP. Pertahankan ID elemen HTML (ad-header, ad-mid, urlInput, btnCheck, resultsCard, mediaGrid) agar JavaScript tetap berjalan 100%."
+---
+
+### 📱 PROMPT 1: Untuk AI Code Generator (ChatGPT / Claude / v0.dev / Bolt.new)
+> "Tolong rombak dan rancang ulang tampilan CSS dan HTML website Ki.Downloader ini menjadi berpenampilan layaknya Aplikasi Mobile Premium (App-like UX) yang sangat nyaman digunakan di HP. 
+> **Aturan Utama:**
+> 1. Gunakan skema warna Emerald Green (#059669) dan Pure White (#ffffff). SANGAT DILARANG menggunakan warna neon stabilo yang norak!
+> 2. Buat komponen form input URL dengan sudut membulat elegan (rounded-pill), tombol Paste yang responsif, dan tombol Download utama dengan tinggi minimal 54px khusus kenyamanan jempol di layar HP.
+> 3. Buat kartu hasil download (media gallery) tampil 1 kolom penuh di mobile dengan bayangan halus (soft shadow) dan tombol unduh berdesain pill button.
+> 4. Sertakan penataan slot iklan (ad-header, ad-mid, ad-native) agar tetap rapi tanpa merusak tata letak mobile.
+> 5. JANGAN MENGUBAH ID elemen HTML (urlInput, btnCheck, resultsCard, mediaGrid, ad-header, ad-mid) agar logika JavaScript backend tetap berfungsi 100%."
+
+---
+
+### 🎨 PROMPT 2: Untuk AI Image Generator / Visual Mockup (Midjourney / DALL-E 3 / Flux / Ideogram)
+> "A ultra-sleek, premium mobile web UI mockup for a modern Video Downloader application named 'Ki.Downloader'. Mobile screen perspective, iOS app-like interface, clean snow white background, deep emerald green buttons (#059669), charcoal dark typography, soft elevation shadows, rounded card containers. Beautiful gallery result cards for TikTok and Instagram posts, elegant search bar with paste icon. Clean corporate aesthetic, strictly NO neon colors, photorealistic UI/UX presentation, 8k resolution --ar 9:16 --v 6.0"
+
+---
+
+### ⚡ PROMPT 3: Untuk Khusus Perbaikan Responsive CSS (Tampilan HP)
+> "Fokus perbaiki CSS file `style.css` ini agar 100% Mobile-Friendly. Pastikan:
+> - Ukuran font input tidak kurang dari 16px agar browser iOS Safari di HP tidak otomatis melakukan zoom-in saat mengetik.
+> - Padding dan margin pada layar mobile (< 600px) menggunakan spacing yang lega dan tidak saling bertumpukan.
+> - Kartu langkah 'Cara Menggunakan' dan 'Fitur Unggulan' tampil dalam grid 1 kolom yang rapi di layar HP.
+> - Menggunakan warna latar #ffffff dan aksen #059669 tanpa efek neon."
+
+---
+
+### 🌟 PROMPT 4: Untuk Micro-Interactions & Loading States
+> "Tambahkan efek mikro-interaksi CSS yang halus pada website ini: efek hover tombol download dengan sedikit elevasi (transform translateY(-2px)), animasi skeleton loading saat media sedang dianalisis, dan border ring hijau emerald yang lembut saat kolom input aktif. Pastikan semua animasi berjalan 60fps tanpa lag di browser seluler."
