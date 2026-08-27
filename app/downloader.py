@@ -74,14 +74,28 @@ def download_media(url: str):
                 post = instaloader.Post.from_shortcode(L.context, shortcode)
                 L.download_post(post, target=target_dir)
 
-            # 2. Instagram Profile Picture (DP HD)
+            # 2. Instagram Profile (Profile Picture DP HD + Stories + Highlights)
             elif "/stories/" not in url and not url.endswith("/p/") and not url.endswith("/reel/"):
-                # Clean profile username from URL (e.g. instagram.com/cristiano/)
                 clean_url = url.split("instagram.com/")[1].strip("/")
                 username = clean_url.split("/")[0].split("?")[0]
                 if username:
                     profile = instaloader.Profile.from_username(L.context, username)
+                    # Download Profile Picture HD
                     L.download_profilepic(profile)
+                    # Attempt to download active stories
+                    try:
+                        for story in L.get_stories(userids=[profile.userid]):
+                            for item in story.get_items():
+                                L.download_storyitem(item, target=target_dir)
+                    except Exception:
+                        pass
+                    # Attempt to download highlights / sorotan
+                    try:
+                        for highlight in L.get_highlights(user=profile):
+                            for item in highlight.get_items():
+                                L.download_storyitem(item, target=target_dir)
+                    except Exception:
+                        pass
 
             # 3. Instagram Stories / Highlights Fallback
             else:
