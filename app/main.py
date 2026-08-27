@@ -80,3 +80,10 @@ def google_verification():
     if verify_file.exists():
         return FileResponse(path=verify_file)
     return HTMLResponse(content="google-site-verification: google285291aa47519dbc.html")
+
+@app.get("/sitemap.xml")
+def sitemap_xml():
+    sitemap_file = Path("static/sitemap.xml")
+    if sitemap_file.exists():
+        return FileResponse(path=sitemap_file, media_type="application/xml")
+    return HTMLResponse(content="<xml></xml>", media_type="application/xml")
