@@ -3,9 +3,31 @@ async function pasteClipboard() {
     const text = await navigator.clipboard.readText();
     if (text) {
       document.getElementById("urlInput").value = text;
+      toggleClearButton();
     }
   } catch (err) {
     alert("Gagal membaca clipboard. Tempelkan link secara manual.");
+  }
+}
+
+function clearInput() {
+  const input = document.getElementById("urlInput");
+  input.value = "";
+  toggleClearButton();
+  input.focus();
+}
+
+function toggleClearButton() {
+  const input = document.getElementById("urlInput");
+  const btnClear = document.getElementById("btnClear");
+  if (btnClear) {
+    if (input.value.trim().length > 0) {
+      btnClear.classList.remove("hidden");
+      btnClear.classList.add("flex");
+    } else {
+      btnClear.classList.add("hidden");
+      btnClear.classList.remove("flex");
+    }
   }
 }
 

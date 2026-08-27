@@ -55,7 +55,7 @@
   </script>
   <style>
     @layer base {
-      body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+      body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; overflow-x: hidden; }
       .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
       .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
     }
@@ -63,11 +63,11 @@
   </style>
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body class="bg-background min-h-screen flex flex-col font-body-md text-on-surface">
+<body class="bg-background min-h-screen flex flex-col font-body-md text-on-surface overflow-x-hidden">
 
   <!-- Fixed Top Bar -->
-  <header class="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-    <div class="h-16 max-w-[800px] mx-auto px-5 flex items-center justify-between gap-4">
+  <header class="fixed top-0 inset-x-0 z-50 bg-background/90 backdrop-blur-xl pt-safe shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+    <div class="h-16 max-w-[800px] mx-auto px-4 sm:px-5 flex items-center justify-between gap-4">
       <div class="flex flex-col">
         <a href="/" class="font-headline-sm text-primary leading-none text-xl font-extrabold">Ki.Downloader</a>
         <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded-full bg-mint-accent text-primary text-[10px] font-bold uppercase tracking-wider">⚡ Multi-Media Ready</span>
@@ -76,39 +76,48 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 pt-20 pb-32">
+  <main class="flex-1 pt-20 pb-32 overflow-x-hidden">
     <!-- Top Header Ad Slot -->
-    <div class="w-full flex justify-center py-2 px-4">
-      <div id="ad-header" class="w-full max-w-[800px] min-h-[50px] bg-surface-container flex flex-col items-center justify-center rounded-xl border border-slate-border text-center">
-        <span class="text-muted-slate-text font-label-sm uppercase">Iklan Header (728x90 / 320x50)</span>
+    <div class="w-full flex justify-center py-2 px-3 sm:px-4">
+      <div id="ad-header" class="w-full max-w-[800px] min-h-[50px] bg-surface-container flex flex-col items-center justify-center rounded-xl border border-slate-border text-center overflow-hidden">
+        <span class="text-muted-slate-text font-label-sm uppercase text-xs">Iklan Header (728x90 / 320x50)</span>
       </div>
     </div>
 
-    <div class="max-w-[800px] mx-auto px-5 flex flex-col gap-6">
+    <div class="max-w-[800px] mx-auto px-3 sm:px-5 flex flex-col gap-6 overflow-x-hidden">
       
       <!-- Hero Section & Form -->
-      <section class="bg-surface-container-lowest soft-elevation rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden transition-all duration-300 border border-slate-border" id="heroContainer">
+      <section class="bg-surface-container-lowest soft-elevation rounded-2xl p-4 sm:p-6 flex flex-col gap-5 sm:gap-6 relative overflow-hidden transition-all duration-300 border border-slate-border" id="heroContainer">
         <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
         
-        <div class="flex flex-col items-center gap-2 text-center z-10">
-          <h1 class="font-headline-lg-mobile md:font-headline-lg text-on-surface font-extrabold text-2xl md:text-3xl">
+        <div class="flex flex-col items-center gap-1.5 sm:gap-2 text-center z-10">
+          <h1 class="font-headline-lg-mobile md:font-headline-lg text-on-surface font-extrabold text-xl sm:text-2xl md:text-3xl leading-tight">
             Unduh Tanpa <span class="text-primary">Watermark</span>
           </h1>
-          <p class="font-body-md text-muted-slate-text text-sm md:text-base max-w-[420px]">
+          <p class="font-body-md text-muted-slate-text text-xs sm:text-sm md:text-base max-w-[420px]">
             Simpan video, audio, foto slide, story & sorotan dari TikTok, Instagram, YouTube, FB, dll.
           </p>
         </div>
 
-        <div class="flex flex-col gap-3 z-10 w-full">
-          <div class="flex flex-row items-center h-[60px] w-full bg-surface-container rounded-xl px-2 transition-all duration-300 group border border-slate-border" id="inputWrapper">
-            <span class="material-symbols-outlined text-muted-slate-text pl-3 pr-1 group-focus-within:text-primary transition-colors">link</span>
-            <input autocomplete="off" class="flex-1 bg-transparent outline-none text-body-md text-on-surface px-2 w-full placeholder:text-muted-slate-text" id="urlInput" placeholder="Tempel URL video atau profil di sini..." type="url"/>
-            <button onclick="pasteClipboard()" class="h-[44px] px-4 bg-secondary-container text-on-secondary-container rounded-lg font-label-md flex items-center gap-1.5 active:scale-95 transition-transform ml-1 font-semibold">
-              <span class="material-symbols-outlined text-[18px]">content_paste</span>
+        <div class="flex flex-col gap-3 z-10 w-full max-w-full">
+          <!-- Input Wrapper with min-w-0 for flex item -->
+          <div class="flex flex-row items-center h-[54px] sm:h-[60px] w-full max-w-full bg-surface-container rounded-xl px-2 transition-all duration-300 group border border-slate-border overflow-hidden" id="inputWrapper">
+            <span class="material-symbols-outlined text-muted-slate-text pl-2 sm:pl-3 pr-1 group-focus-within:text-primary transition-colors shrink-0 text-xl">link</span>
+            <input autocomplete="off" class="min-w-0 flex-1 bg-transparent outline-none text-xs sm:text-sm md:text-body-md text-on-surface px-1.5 sm:px-2 placeholder:text-muted-slate-text" id="urlInput" placeholder="Tempel URL video atau profil di sini..." type="url" oninput="toggleClearButton()"/>
+            
+            <!-- Clear Button -->
+            <button id="btnClear" onclick="clearInput()" type="button" class="h-[40px] px-1.5 text-muted-slate-text hover:text-charcoal-dark hidden items-center justify-center shrink-0 transition-colors" title="Hapus URL">
+              <span class="material-symbols-outlined text-[20px]">cancel</span>
+            </button>
+
+            <!-- Paste Button -->
+            <button onclick="pasteClipboard()" type="button" class="h-[40px] sm:h-[44px] px-3 sm:px-4 bg-secondary-container text-on-secondary-container rounded-lg font-label-md flex items-center gap-1 active:scale-95 transition-transform ml-1 font-semibold shrink-0 text-xs sm:text-sm">
+              <span class="material-symbols-outlined text-[16px] sm:text-[18px]">content_paste</span>
               <span>Tempel</span>
             </button>
           </div>
-          <button onclick="processDownload()" class="h-[60px] w-full bg-primary text-on-primary rounded-xl font-headline-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-primary/20 hover:bg-primary-hover font-bold text-lg" id="btnCheck">
+
+          <button onclick="processDownload()" class="h-[54px] sm:h-[60px] w-full bg-primary text-on-primary rounded-xl font-headline-sm flex items-center justify-center gap-2 active:scale-95 transition-all shadow-lg shadow-primary/20 hover:bg-primary-hover font-bold text-base sm:text-lg" id="btnCheck">
             <span class="material-symbols-outlined">download</span>
             <span>Download Sekarang</span>
           </button>
@@ -116,29 +125,29 @@
       </section>
 
       <!-- Mid Form Ad Slot -->
-      <div class="w-full bg-surface-container-high rounded-xl min-h-[90px] flex flex-col items-center justify-center gap-1 text-muted-slate-text border border-slate-border p-4 text-center" id="ad-mid">
-        <span class="font-label-sm uppercase tracking-wider opacity-70">Iklan Mid Form</span>
+      <div class="w-full bg-surface-container-high rounded-xl min-h-[80px] sm:min-h-[90px] flex flex-col items-center justify-center gap-1 text-muted-slate-text border border-slate-border p-3 text-center overflow-hidden" id="ad-mid">
+        <span class="font-label-sm uppercase tracking-wider opacity-70 text-xs">Iklan Mid Form</span>
       </div>
 
       <!-- Results Section -->
       <section class="bg-surface-container-lowest soft-elevation rounded-2xl overflow-hidden flex flex-col transition-all border border-slate-border" id="resultsCard" style="display:none;">
-        <div class="p-5 bg-surface-container-lowest flex items-center gap-3 border-b border-slate-border">
-          <div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined">folder_zip</span>
+        <div class="p-4 sm:p-5 bg-surface-container-lowest flex items-center gap-3 border-b border-slate-border">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-lg sm:text-xl">folder_zip</span>
           </div>
           <div class="flex-1 min-w-0">
-            <h3 id="mediaTitle" class="font-headline-sm text-on-surface truncate font-bold text-lg">Hasil Download</h3>
+            <h3 id="mediaTitle" class="font-headline-sm text-on-surface truncate font-bold text-base sm:text-lg">Hasil Download</h3>
           </div>
         </div>
 
-        <div class="flex flex-col gap-4 p-5" id="mediaGrid">
+        <div class="flex flex-col gap-4 p-4 sm:p-5" id="mediaGrid">
           <!-- Dynamic Download Cards injected by main.js -->
         </div>
 
         <!-- Native Ad Inside Results -->
-        <div class="w-full bg-surface-container rounded-xl p-4 flex items-center gap-3 m-5 max-w-[calc(100%-2.5rem)] border border-slate-border" id="ad-native">
-          <div class="w-10 h-10 bg-surface-container-high rounded-lg flex-shrink-0 flex items-center justify-center">
-            <span class="material-symbols-outlined text-muted-slate-text">ads_click</span>
+        <div class="w-full bg-surface-container rounded-xl p-3 sm:p-4 flex items-center gap-3 m-4 max-w-[calc(100%-2rem)] border border-slate-border" id="ad-native">
+          <div class="w-9 h-9 bg-surface-container-high rounded-lg flex-shrink-0 flex items-center justify-center">
+            <span class="material-symbols-outlined text-muted-slate-text text-base">ads_click</span>
           </div>
           <div class="flex-1 flex flex-col gap-1">
             <div class="h-3 w-1/2 bg-surface-container-high rounded-full"></div>
@@ -149,106 +158,106 @@
       </section>
 
       <!-- Guide Section -->
-      <section id="cara-pakai" class="flex flex-col gap-4 mt-4">
-        <h2 class="font-headline-md text-on-surface px-2 font-bold text-xl">Cara Menggunakan</h2>
+      <section id="cara-pakai" class="flex flex-col gap-4 mt-2 sm:mt-4">
+        <h2 class="font-headline-md text-on-surface px-2 font-bold text-lg sm:text-xl">Cara Menggunakan</h2>
         <div class="flex flex-col gap-3">
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex items-center gap-4 border border-slate-border">
-            <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-xl">1</div>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-4 border border-slate-border">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-lg sm:text-xl">1</div>
             <div>
-              <h4 class="font-headline-sm text-on-surface font-semibold text-base">Salin Tautan Media</h4>
-              <p class="font-body-md text-sm text-muted-slate-text mt-0.5">Buka TikTok, Instagram, YouTube, FB, dll. Salin link video, foto slide, story, atau profil.</p>
+              <h4 class="font-headline-sm text-on-surface font-semibold text-sm sm:text-base">Salin Tautan Media</h4>
+              <p class="font-body-md text-xs sm:text-sm text-muted-slate-text mt-0.5">Buka TikTok, Instagram, YouTube, FB, dll. Salin link video, foto slide, story, atau profil.</p>
             </div>
           </div>
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex items-center gap-4 border border-slate-border">
-            <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-xl">2</div>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-4 border border-slate-border">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-lg sm:text-xl">2</div>
             <div>
-              <h4 class="font-headline-sm text-on-surface font-semibold text-base">Tempelkan Link</h4>
-              <p class="font-body-md text-sm text-muted-slate-text mt-0.5">Tempelkan tautan ke dalam kolom pencarian di atas, lalu klik <strong>"Download Sekarang"</strong>.</p>
+              <h4 class="font-headline-sm text-on-surface font-semibold text-sm sm:text-base">Tempelkan Link</h4>
+              <p class="font-body-md text-xs sm:text-sm text-muted-slate-text mt-0.5">Tempelkan tautan ke dalam kolom pencarian di atas, lalu klik <strong>"Download Sekarang"</strong>.</p>
             </div>
           </div>
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex items-center gap-4 border border-slate-border">
-            <div class="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-xl">3</div>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex items-center gap-3.5 sm:gap-4 border border-slate-border">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-extrabold text-lg sm:text-xl">3</div>
             <div>
-              <h4 class="font-headline-sm text-on-surface font-semibold text-base">Simpan Media</h4>
-              <p class="font-body-md text-sm text-muted-slate-text mt-0.5">Pilih format MP4, MP3, atau foto slide dan media akan otomatis tersimpan.</p>
+              <h4 class="font-headline-sm text-on-surface font-semibold text-sm sm:text-base">Simpan Media</h4>
+              <p class="font-body-md text-xs sm:text-sm text-muted-slate-text mt-0.5">Pilih format MP4, MP3, atau foto slide dan media akan otomatis tersimpan.</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Features Section -->
-      <section class="flex flex-col gap-4 mt-4">
-        <h2 class="font-headline-md text-on-surface px-2 font-bold text-xl">Fitur Unggulan</h2>
+      <section class="flex flex-col gap-4 mt-2 sm:mt-4">
+        <h2 class="font-headline-md text-on-surface px-2 font-bold text-lg sm:text-xl">Fitur Unggulan</h2>
         <div class="grid grid-cols-2 gap-3 sm:gap-4">
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex flex-col gap-3 border border-slate-border">
-            <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
-              <span class="material-symbols-outlined">water_drop</span>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 border border-slate-border">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg sm:text-xl">water_drop</span>
             </div>
             <div>
-              <h4 class="font-label-md text-on-surface mb-1 font-bold text-sm">Tanpa Watermark</h4>
-              <p class="text-[12px] text-muted-slate-text leading-snug">Kualitas original tanpa logo yang mengganggu.</p>
+              <h4 class="font-label-md text-on-surface mb-0.5 font-bold text-xs sm:text-sm">Tanpa Watermark</h4>
+              <p class="text-[11px] sm:text-[12px] text-muted-slate-text leading-snug">Kualitas original tanpa logo yang mengganggu.</p>
             </div>
           </div>
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex flex-col gap-3 border border-slate-border">
-            <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
-              <span class="material-symbols-outlined">auto_awesome_mosaic</span>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 border border-slate-border">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg sm:text-xl">auto_awesome_mosaic</span>
             </div>
             <div>
-              <h4 class="font-label-md text-on-surface mb-1 font-bold text-sm">Photo Slides</h4>
-              <p class="text-[12px] text-muted-slate-text leading-snug">Unduh semua foto carousel TikTok & IG sekaligus.</p>
+              <h4 class="font-label-md text-on-surface mb-0.5 font-bold text-xs sm:text-sm">Photo Slides</h4>
+              <p class="text-[11px] sm:text-[12px] text-muted-slate-text leading-snug">Unduh semua foto carousel TikTok & IG sekaligus.</p>
             </div>
           </div>
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex flex-col gap-3 border border-slate-border">
-            <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
-              <span class="material-symbols-outlined">amp_stories</span>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 border border-slate-border">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg sm:text-xl">amp_stories</span>
             </div>
             <div>
-              <h4 class="font-label-md text-on-surface mb-1 font-bold text-sm">DP HD & Sorotan</h4>
-              <p class="text-[12px] text-muted-slate-text leading-snug">Unduh foto profil HD, Story, & Sorotan Instagram.</p>
+              <h4 class="font-label-md text-on-surface mb-0.5 font-bold text-xs sm:text-sm">DP HD & Sorotan</h4>
+              <p class="text-[11px] sm:text-[12px] text-muted-slate-text leading-snug">Unduh foto profil HD, Story, & Sorotan Instagram.</p>
             </div>
           </div>
-          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-4 flex flex-col gap-3 border border-slate-border">
-            <div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
-              <span class="material-symbols-outlined">bolt</span>
+          <div class="bg-surface-container-lowest soft-elevation rounded-xl p-3.5 sm:p-4 flex flex-col gap-2.5 sm:gap-3 border border-slate-border">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+              <span class="material-symbols-outlined text-lg sm:text-xl">bolt</span>
             </div>
             <div>
-              <h4 class="font-label-md text-on-surface mb-1 font-bold text-sm">100% Gratis</h4>
-              <p class="text-[12px] text-muted-slate-text leading-snug">Akses penuh ke semua fitur tanpa biaya langganan.</p>
+              <h4 class="font-label-md text-on-surface mb-0.5 font-bold text-xs sm:text-sm">100% Gratis</h4>
+              <p class="text-[11px] sm:text-[12px] text-muted-slate-text leading-snug">Akses penuh ke semua fitur tanpa biaya langganan.</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Footer -->
-      <footer class="mt-12 py-8 border-t border-slate-border flex flex-col gap-6 text-center">
-        <div class="flex justify-center gap-6 text-muted-slate-text font-label-md text-sm">
+      <footer class="mt-8 sm:mt-12 py-6 sm:py-8 border-t border-slate-border flex flex-col gap-5 text-center">
+        <div class="flex justify-center gap-6 text-muted-slate-text font-label-md text-xs sm:text-sm">
           <a href="#" class="hover:text-primary transition-colors">Beranda</a>
           <a href="#cara-pakai" class="hover:text-primary transition-colors">Cara Pakai</a>
         </div>
-        <div class="text-muted-slate-text font-label-sm leading-relaxed text-xs">
+        <div class="text-muted-slate-text font-label-sm leading-relaxed text-[11px] sm:text-xs px-2">
           <p>© 2026 <strong>Ki.Downloader</strong>. Built for high-speed multi-media processing.</p>
-          <p class="mt-2 opacity-60">Disclaimer: Ki.Downloader is a utility tool. We do not host any content. Users are responsible for ensuring they have the rights to download media.</p>
+          <p class="mt-1.5 opacity-60">Disclaimer: Ki.Downloader is a utility tool. We do not host any content. Users are responsible for ensuring they have the rights to download media.</p>
         </div>
       </footer>
     </div>
   </main>
 
   <!-- Sticky Bottom Anchor Ad (Mobile) -->
-  <div class="fixed bottom-20 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+  <div class="fixed bottom-16 sm:bottom-20 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
     <div class="w-full max-w-[320px] min-h-[50px] bg-white soft-elevation border border-slate-border flex flex-col items-center justify-center rounded-lg pointer-events-auto shadow-md">
       <span class="text-muted-slate-text font-label-sm uppercase text-[10px]">Sticky Anchor Ad</span>
     </div>
   </div>
 
   <!-- Bottom Mobile Navigation Bar -->
-  <nav class="fixed bottom-0 inset-x-0 z-50 bg-background/90 backdrop-blur-xl pb-safe shadow-[0_-1px_8px_rgba(0,0,0,0.04)] border-t border-slate-border">
-    <div class="flex justify-around items-center h-16 max-w-[800px] mx-auto px-4">
-      <a class="flex flex-col items-center justify-center gap-1 w-1/2 h-full text-primary font-bold text-xs" href="#">
-        <span class="material-symbols-outlined text-xl">home</span>
+  <nav class="fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-xl pb-safe shadow-[0_-1px_8px_rgba(0,0,0,0.04)] border-t border-slate-border">
+    <div class="flex justify-around items-center h-14 sm:h-16 max-w-[800px] mx-auto px-4">
+      <a class="flex flex-col items-center justify-center gap-0.5 w-1/2 h-full text-primary font-bold text-xs" href="#">
+        <span class="material-symbols-outlined text-lg sm:text-xl">home</span>
         <span>Beranda</span>
       </a>
-      <a class="flex flex-col items-center justify-center gap-1 w-1/2 h-full text-muted-slate-text hover:text-primary text-xs" href="#cara-pakai">
-        <span class="material-symbols-outlined text-xl">help</span>
+      <a class="flex flex-col items-center justify-center gap-0.5 w-1/2 h-full text-muted-slate-text hover:text-primary text-xs" href="#cara-pakai">
+        <span class="material-symbols-outlined text-lg sm:text-xl">help</span>
         <span>Bantuan</span>
       </a>
     </div>
