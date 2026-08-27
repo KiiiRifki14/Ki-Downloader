@@ -32,7 +32,13 @@ async function processDownload() {
       body: JSON.stringify({ url: urlInput })
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseError) {
+      throw new Error("Server sedang bersiap (restarting). Harap coba klik 'Download Sekarang' sekali lagi.");
+    }
+
     if (res.ok && data.status === "success") {
       resultsCard.style.display = "block";
       document.getElementById("mediaTitle").innerText = `Ditemukan ${data.files.length} File Media`;
@@ -74,14 +80,9 @@ async function processDownload() {
       alert(data.detail || "Gagal memproses video.");
     }
   } catch (err) {
-    alert("Terjadi kesalahan jaringan atau server.");
+    alert(err.message || "Terjadi kesalahan jaringan atau server.");
   } finally {
     btnCheck.disabled = false;
     btnCheck.innerHTML = `<span class="material-symbols-outlined">download</span> <span>Download Sekarang</span>`;
   }
-}
-
-function openEmbedModal() {
-  const embedCode = `<iframe src="${window.location.origin}/embed" width="100%" height="480" frameborder="0"></iframe>`;
-  prompt("Salin kode iframe berikut untuk dipasang di website Anda:", embedCode);
 }

@@ -46,12 +46,17 @@ def analyze_url(req: AnalyzeRequest, background_tasks: BackgroundTasks):
 def download_url(req: DownloadRequest, background_tasks: BackgroundTasks):
     background_tasks.add_task(cleanup_old_files)
     if not req.url or not req.url.startswith("http"):
-        raise HTTPException(status_code=400, detail="URL tidak valid!")
+        raise HTTPException(status_code=400, detail="URL tidak valid! Harap masukkan link lengkap yang diawali http:// atau https://")
     
-    session_id, files = download_media(req.url)
-    if not files:
-        raise HTTPException(status_code=500, detail="Gagal mendownload media dari tautan ini.")
-    return {"status": "success", "session_id": session_id, "files": files}
+    try:
+        session_id, files = download_media(req.url)
+        if not files:
+            raise HTTPException(status_code=400, detail="Gagal mengambil media dari link ini. Pastikan akun/postingan bersifat publik dan link dapat diakses.")
+        return {"status": "success", "session_id": session_id, "files": files}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal memproses media: {str(e)}")
 
 @app.get("/api/file/{session_id}/{filename}")
 def serve_file(session_id: str, filename: str):
