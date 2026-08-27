@@ -1,9 +1,15 @@
 import os
 import uuid
+import re
+import requests
 import yt_dlp
 import instaloader
-import requests
 from pathlib import Path
+
+# Clear invalid SSL CA cert bundle variables if set on host machine (e.g. XAMPP on Windows)
+for env_var in ("CURL_CA_BUNDLE", "SSL_CERT_FILE", "REQUESTS_CA_BUNDLE"):
+    if env_var in os.environ and not os.path.exists(os.environ[env_var]):
+        os.environ.pop(env_var, None)
 
 TEMP_DIR = Path("temp_downloads")
 TEMP_DIR.mkdir(exist_ok=True)
@@ -47,7 +53,7 @@ def get_video_info(url: str):
                 "platform": platform,
                 "uploader": info.get("uploader", "")
             }
-    except Exception as e:
+    except Exception:
         return None
 
 def download_media(url: str):
@@ -70,32 +76,67 @@ def download_media(url: str):
             
             # 1. Instagram Post or Reel
             if "/p/" in url or "/reel/" in url:
-                shortcode = url.split("/p/")[1].split("/")[0] if "/p/" in url else url.split("/reel/")[1].split("/")[0]
-                post = instaloader.Post.from_shortcode(L.context, shortcode)
-                L.download_post(post, target=target_dir)
+                try:
+                    shortcode = url.split("/p/")[1].split("/")[0] if "/p/" in url else url.split("/reel/")[1].split("/")[0]
+                    post = instaloader.Post.from_shortcode(L.context, shortcode)
+                    L.download_post(post, target=target_dir)
+                except Exception:
+                    # Fallback yt-dlp for Post/Reel
+                    outtmpl = str(target_dir / "%(title)s.%(ext)s")
+                    ydl_opts = {
+                        "outtmpl": outtmpl,
+                        "quiet": True,
+                        "noplaylist": True,
+                        "format": "bestvideo+bestaudio/best",
+                    }
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        ydl.download([url])
 
             # 2. Instagram Profile (Profile Picture DP HD + Stories + Highlights)
-            elif "/stories/" not in url and not url.endswith("/p/") and not url.endswith("/reel/"):
+            elif "/stories/" not in url and not (url.endswith("/p/") or "/p/" in url) and not (url.endswith("/reel/") or "/reel/" in url):
                 clean_url = url.split("instagram.com/")[1].strip("/")
                 username = clean_url.split("/")[0].split("?")[0]
                 if username:
-                    profile = instaloader.Profile.from_username(L.context, username)
-                    # Download Profile Picture HD
-                    L.download_profilepic(profile)
-                    # Attempt to download active stories
+                    # Method A: Instaloader Profile
                     try:
-                        for story in L.get_stories(userids=[profile.userid]):
-                            for item in story.get_items():
-                                L.download_storyitem(item, target=target_dir)
+                        profile = instaloader.Profile.from_username(L.context, username)
+                        pic_url = profile.profile_pic_url_hd or profile.profile_pic_url
+                        if pic_url:
+                            r_img = requests.get(pic_url, timeout=10)
+                            if r_img.status_code == 200:
+                                with open(target_dir / f"{username}_profile_pic.jpg", "wb") as f_img:
+                                    f_img.write(r_img.content)
+                        
+                        # Attempt stories & highlights
+                        try:
+                            for story in L.get_stories(userids=[profile.userid]):
+                                for item in story.get_items():
+                                    L.download_storyitem(item, target=target_dir)
+                        except Exception:
+                            pass
                     except Exception:
                         pass
-                    # Attempt to download highlights / sorotan
-                    try:
-                        for highlight in L.get_highlights(user=profile):
-                            for item in highlight.get_items():
-                                L.download_storyitem(item, target=target_dir)
-                    except Exception:
-                        pass
+
+                    # Method B: Direct Instagram Scraping Fallback if Instaloader is rate limited
+                    if not any(target_dir.iterdir()):
+                        try:
+                            headers = {
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                                "X-IG-App-ID": "936619743392459"
+                            }
+                            api_url = f"https://www.instagram.com/api/v1/users/web_profile_info/?username={username}"
+                            r_api = requests.get(api_url, headers=headers, timeout=10)
+                            if r_api.status_code == 200:
+                                data = r_api.json()
+                                user_data = data.get("data", {}).get("user", {})
+                                pic_url = user_data.get("profile_pic_url_hd") or user_data.get("profile_pic_url")
+                                if pic_url:
+                                    r_img = requests.get(pic_url, timeout=10)
+                                    if r_img.status_code == 200:
+                                        with open(target_dir / f"{username}_profile_pic.jpg", "wb") as f_img:
+                                            f_img.write(r_img.content)
+                        except Exception:
+                            pass
 
             # 3. Instagram Stories / Highlights Fallback
             else:
@@ -120,20 +161,31 @@ def download_media(url: str):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
 
-        # Scan target folder for downloaded photos, videos, and avatars
-        for f in os.listdir(target_dir):
-            if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
-                found_files.append({
-                    "filename": f,
-                    "filepath": str(target_dir / f),
-                    "relative_url": f"/api/file/{session_id}/{f}",
-                    "is_video": f.endswith(('.mp4', '.webm')),
-                    "is_image": f.endswith(('.jpg', '.jpeg', '.png'))
-                })
+        # Scan target folder (including subdirectories created by Instaloader)
+        for root, dirs, files in os.walk(target_dir):
+            for f in files:
+                if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
+                    full_path = Path(root) / f
+                    rel_name = full_path.name
+                    # Move subfolder file to target_dir root if needed
+                    if full_path.parent != target_dir:
+                        dest = target_dir / rel_name
+                        full_path.rename(dest)
+                        full_path = dest
+                    
+                    found_files.append({
+                        "filename": rel_name,
+                        "filepath": str(full_path),
+                        "relative_url": f"/api/file/{session_id}/{rel_name}",
+                        "is_video": rel_name.endswith(('.mp4', '.webm')),
+                        "is_image": rel_name.endswith(('.jpg', '.jpeg', '.png'))
+                    })
+        
         found_files.sort(key=lambda x: x["filename"])
         return session_id, found_files
-    except Exception as e:
-        # Fallback to yt-dlp if instaloader encounters private/login restriction
+
+    except Exception:
+        # Final fallback with yt-dlp
         try:
             outtmpl = str(target_dir / "%(title)s.%(ext)s")
             ydl_opts = {
@@ -145,15 +197,22 @@ def download_media(url: str):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
 
-            for f in os.listdir(target_dir):
-                if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
-                    found_files.append({
-                        "filename": f,
-                        "filepath": str(target_dir / f),
-                        "relative_url": f"/api/file/{session_id}/{f}",
-                        "is_video": f.endswith(('.mp4', '.webm')),
-                        "is_image": f.endswith(('.jpg', '.jpeg', '.png'))
-                    })
+            for root, dirs, files in os.walk(target_dir):
+                for f in files:
+                    if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
+                        full_path = Path(root) / f
+                        rel_name = full_path.name
+                        if full_path.parent != target_dir:
+                            dest = target_dir / rel_name
+                            full_path.rename(dest)
+                            full_path = dest
+                        found_files.append({
+                            "filename": rel_name,
+                            "filepath": str(full_path),
+                            "relative_url": f"/api/file/{session_id}/{rel_name}",
+                            "is_video": rel_name.endswith(('.mp4', '.webm')),
+                            "is_image": rel_name.endswith(('.jpg', '.jpeg', '.png'))
+                        })
             found_files.sort(key=lambda x: x["filename"])
             return session_id, found_files
         except Exception:
