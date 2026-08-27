@@ -21,16 +21,20 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
-  line-height: 1.5;
-  padding-bottom: 80px;
+  line-height: 1.6;
+  padding-bottom: 40px;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -257,4 +261,171 @@ body {
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 600;
+}
+
+/* Section Containers & Titles */
+.section-container {
+  margin-top: 48px;
+  margin-bottom: 40px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 4px;
+  background-color: var(--primary-emerald);
+  margin: 8px auto 0;
+  border-radius: 2px;
+}
+
+/* Steps Grid (Cara Pakai) */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.step-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background-color: var(--primary-light);
+  color: var(--primary-emerald);
+  font-weight: 800;
+  font-size: 13px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.feature-icon {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 6px;
+}
+
+.feature-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Footer Section */
+.footer {
+  margin-top: 60px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.footer-logo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.footer-logo span {
+  color: var(--primary-emerald);
+}
+
+.footer-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 0 auto 16px;
+}
+
+.footer-links {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: var(--primary-emerald);
+  text-decoration: none;
+  font-weight: 600;
+  margin: 0 8px;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.disclaimer {
+  font-size: 11px;
+  color: #94a3b8;
+  display: inline-block;
+  margin-top: 4px;
 }
