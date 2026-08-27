@@ -73,3 +73,10 @@ def embed_page():
     if embed_file.exists():
         return HTMLResponse(content=embed_file.read_text(encoding="utf-8"))
     return HTMLResponse(content="<h1>Ki.Downloader Embed Page</h1>")
+
+@app.get("/google285291aa47519dbc.html")
+def google_verification():
+    verify_file = Path("static/google285291aa47519dbc.html")
+    if verify_file.exists():
+        return FileResponse(path=verify_file)
+    return HTMLResponse(content="google-site-verification: google285291aa47519dbc.html")
