@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ki.Downloader - Pengunduh Video Multi Medsos</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo">Ki<span>.Downloader</span></div>
+      <button class="btn-embed-trigger" onclick="openEmbedModal()">⚡ Embed ke Web Saya</button>
+    </header>
+
+    <!-- Top Header Ad Slot -->
+    <div id="ad-header" class="ad-slot">Iklan Header (728x90 / 320x50)</div>
+
+    <section class="hero">
+      <h1 class="hero-title">Download Video <span>Tanpa Watermark</span></h1>
+      <p class="hero-subtitle">Unduh video & foto dari TikTok, Instagram, YouTube, Twitter/X, FB, dan lainnya.</p>
+      <div class="platforms-pills">
+        <span class="badge">TikTok No-WM</span>
+        <span class="badge">IG Reels & Carousel</span>
+        <span class="badge">YouTube HD & MP3</span>
+        <span class="badge">Twitter/X</span>
+        <span class="badge">Facebook</span>
+        <span class="badge">Pinterest</span>
+      </div>
+    </section>
+
+    <main class="input-card">
+      <div class="input-group">
+        <input type="text" id="urlInput" class="input-url" placeholder="Tempelkan link video di sini...">
+        <button class="btn-paste" onclick="pasteClipboard()">📋 Tempel</button>
+      </div>
+      <button class="btn-submit" id="btnCheck" onclick="processDownload()">⬇️ Download Sekarang</button>
+    </main>
+
+    <!-- Mid Form Ad Slot -->
+    <div id="ad-mid" class="ad-slot">Iklan Mid Form</div>
+
+    <section id="resultsCard" class="results-card">
+      <h3 id="mediaTitle" class="results-header">Hasil Download</h3>
+      <div id="mediaGrid" class="media-grid"></div>
+    </section>
+  </div>
+
+  <!-- Script Imports -->
+  <script src="/static/js/ads-config.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

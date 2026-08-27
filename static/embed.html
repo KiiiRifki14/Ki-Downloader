@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ki.Downloader Embed Widget</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body { background: #ffffff; padding: 10px; }
+    .container { max-width: 100%; padding: 0; }
+    .header, .hero, .btn-embed-trigger, #ad-header { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div style="text-align:center; font-weight:800; font-size:18px; margin-bottom:12px; color:#059669;">
+      ⚡ Video Downloader Widget
+    </div>
+    <main class="input-card" style="box-shadow:none; border:1px solid #e2e8f0;">
+      <div class="input-group">
+        <input type="text" id="urlInput" class="input-url" placeholder="Tempel link video...">
+        <button class="btn-paste" onclick="pasteClipboard()">📋 Tempel</button>
+      </div>
+      <button class="btn-submit" id="btnCheck" onclick="processDownload()">⬇️ Download Now</button>
+    </main>
+
+    <section id="resultsCard" class="results-card" style="box-shadow:none;">
+      <h3 id="mediaTitle" class="results-header">Hasil Download</h3>
+      <div id="mediaGrid" class="media-grid"></div>
+    </section>
+  </div>
+
+  <script src="/static/js/ads-config.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>
