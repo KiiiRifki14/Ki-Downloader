@@ -1,7 +1,7 @@
 @echo off
 if "%~1"=="" (
     echo Harap sertakan URL Repository GitHub Anda!
-    echo Contoh penggunaan: push_to_github.bat https://github.com/KiiiRifki14/video-downloader.git
+    echo Contoh penggunaan: push_to_github.bat https://github.com/KiiiRifki14/Ki-Downloader.git
     exit /b 1
 )
 
