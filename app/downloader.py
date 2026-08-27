@@ -2,6 +2,7 @@ import os
 import uuid
 import yt_dlp
 import instaloader
+import requests
 from pathlib import Path
 
 TEMP_DIR = Path("temp_downloads")
@@ -30,7 +31,7 @@ def get_video_info(url: str):
     try:
         if platform == "instagram":
             return {
-                "title": "Instagram Media Post",
+                "title": "Instagram Media / Profile / Story",
                 "thumbnail": None,
                 "platform": "instagram",
                 "slides_support": True
@@ -40,7 +41,7 @@ def get_video_info(url: str):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             return {
-                "title": info.get("title", "Social Media Video"),
+                "title": info.get("title", "Social Media Content"),
                 "thumbnail": info.get("thumbnail"),
                 "duration": info.get("duration"),
                 "platform": platform,
@@ -66,15 +67,34 @@ def download_media(url: str):
                 download_comments=False,
                 compress_json=False
             )
-            shortcode = None
-            if "/p/" in url:
-                shortcode = url.split("/p/")[1].split("/")[0]
-            elif "/reel/" in url:
-                shortcode = url.split("/reel/")[1].split("/")[0]
             
-            if shortcode:
+            # 1. Instagram Post or Reel
+            if "/p/" in url or "/reel/" in url:
+                shortcode = url.split("/p/")[1].split("/")[0] if "/p/" in url else url.split("/reel/")[1].split("/")[0]
                 post = instaloader.Post.from_shortcode(L.context, shortcode)
                 L.download_post(post, target=target_dir)
+
+            # 2. Instagram Profile Picture (DP HD)
+            elif "/stories/" not in url and not url.endswith("/p/") and not url.endswith("/reel/"):
+                # Clean profile username from URL (e.g. instagram.com/cristiano/)
+                clean_url = url.split("instagram.com/")[1].strip("/")
+                username = clean_url.split("/")[0].split("?")[0]
+                if username:
+                    profile = instaloader.Profile.from_username(L.context, username)
+                    L.download_profilepic(profile)
+
+            # 3. Instagram Stories / Highlights Fallback
+            else:
+                outtmpl = str(target_dir / "%(title)s.%(ext)s")
+                ydl_opts = {
+                    "outtmpl": outtmpl,
+                    "quiet": True,
+                    "noplaylist": True,
+                    "format": "bestvideo+bestaudio/best",
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
+
         else:
             outtmpl = str(target_dir / "%(title)s.%(ext)s")
             ydl_opts = {
@@ -86,6 +106,7 @@ def download_media(url: str):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
 
+        # Scan target folder for downloaded photos, videos, and avatars
         for f in os.listdir(target_dir):
             if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
                 found_files.append({
@@ -98,4 +119,28 @@ def download_media(url: str):
         found_files.sort(key=lambda x: x["filename"])
         return session_id, found_files
     except Exception as e:
-        return session_id, []
+        # Fallback to yt-dlp if instaloader encounters private/login restriction
+        try:
+            outtmpl = str(target_dir / "%(title)s.%(ext)s")
+            ydl_opts = {
+                "outtmpl": outtmpl,
+                "quiet": True,
+                "noplaylist": True,
+                "format": "bestvideo+bestaudio/best",
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+
+            for f in os.listdir(target_dir):
+                if f.endswith(('.jpg', '.jpeg', '.png', '.mp4', '.webm', '.m4a', '.mp3')):
+                    found_files.append({
+                        "filename": f,
+                        "filepath": str(target_dir / f),
+                        "relative_url": f"/api/file/{session_id}/{f}",
+                        "is_video": f.endswith(('.mp4', '.webm')),
+                        "is_image": f.endswith(('.jpg', '.jpeg', '.png'))
+                    })
+            found_files.sort(key=lambda x: x["filename"])
+            return session_id, found_files
+        except Exception:
+            return session_id, []
