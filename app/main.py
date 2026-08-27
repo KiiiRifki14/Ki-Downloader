@@ -51,7 +51,7 @@ def download_url(req: DownloadRequest, background_tasks: BackgroundTasks):
     try:
         session_id, files = download_media(req.url)
         if not files:
-            raise HTTPException(status_code=400, detail="Gagal mengambil media dari link ini. Pastikan akun/postingan bersifat publik dan link dapat diakses.")
+            raise HTTPException(status_code=400, detail="Instagram memerlukan verifikasi/login untuk profil ini, atau link tidak dapat diakses publik. Untuk hasil terbaik, harap tempelkan link postingan atau Reels langsung (contoh: instagram.com/reel/...).")
         return {"status": "success", "session_id": session_id, "files": files}
     except HTTPException:
         raise

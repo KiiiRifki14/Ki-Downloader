@@ -66,6 +66,8 @@ def download_media(url: str):
     try:
         if platform == "instagram":
             L = instaloader.Instaloader(
+                max_connection_attempts=1,
+                request_timeout=5.0,
                 save_metadata=False,
                 download_videos=True,
                 download_video_thumbnails=False,
