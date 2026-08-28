@@ -140,17 +140,27 @@ def download_media(url: str):
                         except Exception:
                             pass
 
-            # 3. Instagram Stories / Highlights Fallback
-            else:
-                outtmpl = str(target_dir / "%(title)s.%(ext)s")
-                ydl_opts = {
-                    "outtmpl": outtmpl,
-                    "quiet": True,
-                    "noplaylist": True,
-                    "format": "bestvideo+bestaudio/best",
-                }
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    ydl.download([url])
+            # 3. Publer API Fallback for Instagram Media
+            if not any(target_dir.iterdir()):
+                try:
+                    publer_headers = {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                        "Content-Type": "application/json",
+                        "Origin": "https://publer.io",
+                        "Referer": "https://publer.io/tools/media-downloader"
+                    }
+                    r_pub = requests.post(
+                        "https://publer.io/api/v1/media/download",
+                        json={"url": url, "iphone": False},
+                        headers=publer_headers,
+                        timeout=15
+                    )
+                    if r_pub.status_code == 200 and len(r_pub.content) > 10000:
+                        out_file = target_dir / "instagram_media.mp4"
+                        with open(out_file, "wb") as f_out:
+                            f_out.write(r_pub.content)
+                except Exception:
+                    pass
 
         else:
             outtmpl = str(target_dir / "%(title)s.%(ext)s")
