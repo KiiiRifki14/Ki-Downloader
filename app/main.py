@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from pathlib import Path
-from app.downloader import get_video_info, download_media, TEMP_DIR
+from app.downloader import get_video_info, download_media, detect_platform, TEMP_DIR
 from app.cleaner import cleanup_old_files
 
 app = FastAPI(title="Ki.Downloader API", version="2.0.0")
