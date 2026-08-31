@@ -92,3 +92,11 @@ def sitemap_xml():
     if sitemap_file.exists():
         return FileResponse(path=sitemap_file, media_type="application/xml")
     return HTMLResponse(content="<xml></xml>", media_type="application/xml")
+
+@app.get("/ads.txt")
+def ads_txt():
+    ads_file = Path("static/ads.txt")
+    if ads_file.exists():
+        return FileResponse(path=ads_file, media_type="text/plain")
+    return HTMLResponse(content="google.com, pub-8407690253451748, DIRECT, f08c47fec0942fa0", media_type="text/plain")
+
