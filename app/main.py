@@ -51,7 +51,15 @@ def download_url(req: DownloadRequest, background_tasks: BackgroundTasks):
     try:
         session_id, files = download_media(req.url)
         if not files:
-            raise HTTPException(status_code=400, detail="⚠️ Kebijakan Instagram: Pembacaan link akun profil secara otomatis diblokir oleh Instagram tanpa login. Solusi: Harap buka foto/video Reels dari akun publik ini, lalu tempelkan LINK POSTINGAN / REELS-nya langsung ke sini!")
+            platform = detect_platform(req.url)
+            if platform == "instagram":
+                raise HTTPException(status_code=400, detail="⚠️ Kebijakan Instagram: Pembacaan link akun profil secara otomatis diblokir oleh Instagram tanpa login. Solusi: Harap tempelkan LINK POSTINGAN / REELS-nya langsung!")
+            elif platform == "tiktok":
+                raise HTTPException(status_code=400, detail="⚠️ Gagal mengambil video TikTok. Pastikan postingan TikTok bersifat publik dan link valid.")
+            elif platform == "youtube":
+                raise HTTPException(status_code=400, detail="⚠️ Gagal mengambil video YouTube. Pastikan link video/Shorts YouTube valid.")
+            else:
+                raise HTTPException(status_code=400, detail="⚠️ Gagal mengambil media dari link ini. Pastikan konten bersifat publik dan link dapat diakses.")
         return {"status": "success", "session_id": session_id, "files": files}
     except HTTPException:
         raise

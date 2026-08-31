@@ -56,6 +56,43 @@ def get_video_info(url: str):
     except Exception:
         return None
 
+def download_tiktok_tikwm(url: str, target_dir: Path) -> bool:
+    try:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+        }
+        r = requests.post("https://www.tikwm.com/api/", data={"url": url}, headers=headers, timeout=12)
+        if r.status_code == 200:
+            res_json = r.json()
+            data = res_json.get("data", {})
+            if data:
+                title = data.get("title", "tiktok_video")[:30]
+                clean_title = "".join(c for c in title if c.isalnum() or c in (" ", "_", "-")).strip() or "tiktok_media"
+                
+                # Check if photo slide
+                images = data.get("images", [])
+                if images:
+                    for idx, img_url in enumerate(images):
+                        r_img = requests.get(img_url, headers=headers, timeout=10)
+                        if r_img.status_code == 200:
+                            with open(target_dir / f"{clean_title}_slide_{idx+1}.jpg", "wb") as f:
+                                f.write(r_img.content)
+                    return True
+                
+                # Video No WM
+                video_url = data.get("play") or data.get("wmplay")
+                if video_url:
+                    if video_url.startswith("//"):
+                        video_url = "https:" + video_url
+                    r_vid = requests.get(video_url, headers=headers, timeout=15)
+                    if r_vid.status_code == 200:
+                        with open(target_dir / f"{clean_title}_nowm.mp4", "wb") as f:
+                            f.write(r_vid.content)
+                        return True
+    except Exception:
+        pass
+    return False
+
 def download_media(url: str):
     session_id = str(uuid.uuid4())
     target_dir = TEMP_DIR / session_id
@@ -161,6 +198,19 @@ def download_media(url: str):
                             f_out.write(r_pub.content)
                 except Exception:
                     pass
+
+        elif platform == "tiktok":
+            success = download_tiktok_tikwm(url, target_dir)
+            if not success:
+                outtmpl = str(target_dir / "%(title)s.%(ext)s")
+                ydl_opts = {
+                    "outtmpl": outtmpl,
+                    "quiet": True,
+                    "noplaylist": True,
+                    "format": "bestvideo+bestaudio/best",
+                }
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    ydl.download([url])
 
         else:
             outtmpl = str(target_dir / "%(title)s.%(ext)s")
