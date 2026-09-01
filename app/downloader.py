@@ -79,8 +79,8 @@ def download_tiktok_tikwm(url: str, target_dir: Path) -> bool:
                                 f.write(r_img.content)
                     return True
                 
-                # Video No WM
-                video_url = data.get("play") or data.get("wmplay")
+                # Video No WM (prioritize hdplay 1080p original stream)
+                video_url = data.get("hdplay") or data.get("play") or data.get("wmplay")
                 if video_url:
                     if video_url.startswith("//"):
                         video_url = "https:" + video_url
