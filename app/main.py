@@ -108,3 +108,32 @@ def ads_txt():
         return FileResponse(path=ads_file, media_type="text/plain")
     return HTMLResponse(content="google.com, pub-8407690253451748, DIRECT, f08c47fec0942fa0", media_type="text/plain")
 
+@app.get("/privacy", response_class=HTMLResponse)
+def privacy_page():
+    f = Path("static/privacy.html")
+    if f.exists():
+        return HTMLResponse(content=f.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Privacy Policy</h1>")
+
+@app.get("/terms", response_class=HTMLResponse)
+def terms_page():
+    f = Path("static/terms.html")
+    if f.exists():
+        return HTMLResponse(content=f.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Terms of Service</h1>")
+
+@app.get("/about", response_class=HTMLResponse)
+def about_page():
+    f = Path("static/about.html")
+    if f.exists():
+        return HTMLResponse(content=f.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>About Us</h1>")
+
+@app.get("/contact", response_class=HTMLResponse)
+def contact_page():
+    f = Path("static/contact.html")
+    if f.exists():
+        return HTMLResponse(content=f.read_text(encoding="utf-8"))
+    return HTMLResponse(content="<h1>Contact Us</h1>")
+
+
